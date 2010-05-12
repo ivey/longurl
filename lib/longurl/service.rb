@@ -77,7 +77,7 @@ module LongURL
       Net::HTTP.start(ServiceEndPoint.host, ServiceEndPoint.port) do |http|
         response = http.get("#{ServiceEndPoint.path}?format=json")
         parsed = JSON.parse(response.body)
-        parsed.values.flatten
+        parsed.values.collect { |x| x["domain"] }.flatten
       end
     rescue Timeout::Error, Errno::ENETUNREACH, Errno::ETIMEDOUT, SocketError
       raise LongURL::NetworkError
@@ -88,8 +88,8 @@ module LongURL
     def handle_response(response)
       parsed = JSON.parse(response.body)
       parsed = parsed.first if parsed.is_a?(Array)
-      if parsed['long_url']
-        parsed['long_url']
+      if parsed['long-url']
+        parsed['long-url']
       elsif parsed['message'] # Error
         raise exception_regarding_message(parsed['message'])
       else
