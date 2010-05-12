@@ -35,7 +35,7 @@ module LongURL
     def query(url, options={ })
       escaped_url = check_and_escape(url)
       api_url = "#{EndPoint.path}?format=json&url=#{escaped_url}"
-      if options[:first_redirect]
+      if options[:first_only]
         api_url += "&all-redirects=1"
       end
       Net::HTTP.start(EndPoint.host, EndPoint.port) do |http|
