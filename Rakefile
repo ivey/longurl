@@ -3,12 +3,12 @@ require 'rake'
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |s|
-    s.name              = "longurl"
+    s.name              = "ivey-longurl"
     s.summary           = %q{LongURL expands shorten urls (tinyurl, is.gd, ...)}
-    s.homepage          = "http://longurl.rubyforge.org"
+    s.homepage          = "http://github.com/ivey/longurl"
     s.description       = %q{LongURL expands short urls (tinyurl, is.gd, ...) to original ones, using on LongURL.org, internal resolution or direct resolution}
-    s.authors           = ["Fabien Jakimowicz"]
-    s.email             = "fabien@jakimowicz.com"
+    s.authors           = ["Fabien Jakimowicz", "Michael D. Ivey"]
+    s.email             = "ivey@gweezlebur.com"
     s.rubyforge_project = 'longurl'
 
     s.add_dependency 'json'
