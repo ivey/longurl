@@ -52,4 +52,13 @@ class TextExpander < Test::Unit::TestCase
   def test_expand_with_should_continue_to_resolve_urls_even_if_direct_resolution_is_true
     assert_equal "http://www.flickr.com/photos/jakimowicz", @expander.expand('http://tinyurl.com/r9cm9p', :direct_resolution => true)
   end
+
+  def test_first_only_defaults_to_false
+    assert !@expander.first_only
+  end
+
+  def test_expand_with_first_only_should_resolve_to_first_not_final
+    expander = LongURL::Expander.new :first_only => true
+    assert_equal "http://gmail.com", expander.expand(MultipleRedirectURL)
+  end
 end

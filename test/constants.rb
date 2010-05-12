@@ -12,3 +12,4 @@ ShortToLong = {
     "http://ff.im/-31MWm" => "http://www.infrasystems.com/how-to-write-an-mrd.html"
   }
 }
+MultipleRedirectURL = "http://bit.ly/9NiEKB"

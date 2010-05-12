@@ -32,10 +32,16 @@ module LongURL
   # * LongURL::NetworkError : a network (timeout, host could be reached, ...) error occurs
   # * LongURL::UnknownError : an unknown error occurs
   class Expander
+
+    attr_accessor :first_only
+    
     # Initialize a new Expander.
     # === Options
     # * <tt>:cache</tt>: define a cache which Expander can use.
     #   It must implements [] and []= methods. It can be disabled using false.
+    # * <tt>:first_only</tt> : if true, users all-redirects option to the API to fetch only the first redirect
+    #   instead of following all of them. Useful to identify the original URL that was shortened, not the
+    #   destination.
     def initialize(options = {})
       # OPTIMIZE : This code is a complete duplicate of cache handling in service.
       if options[:cache].nil?
@@ -46,12 +52,13 @@ module LongURL
         @@cache = options[:cache]
       end
       @@service = Service.new(:cache => @@cache)
+      @first_only = options[:first_only]
     end
     
     # Expand given url using LongURL::Service class first and then try a direct_resolution,
     # unless :direct_resolution is set to false in options hash.
-    def expand(url, options = {})
-      @@service.query_supported_service_only url, options
+    def expand(url, options={ })
+      @@service.query_supported_service_only url, :first_only => first_only
     rescue UnsupportedService
       options[:direct_resolution] == false ? raise(UnsupportedService) : direct_resolution(url)
     end
@@ -72,7 +79,7 @@ module LongURL
     def expand_each_in(text, options = {})
       text.gsub(ShortURLMatchRegexp) do |shorturl| 
         begin
-          expand shorturl, options
+          expand shorturl
         rescue  InvalidURL,
                 NetworkError,
                 TooManyRedirections,
