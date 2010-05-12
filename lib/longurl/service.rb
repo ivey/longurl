@@ -22,20 +22,24 @@ module LongURL
       @@supported_services = cached_or_fetch_supported_services
     end
     
-    def query_supported_service_only(url)
+    def query_supported_service_only(url, options={ })
       check url
       raise LongURL::UnsupportedService unless service_supported?(url)
-      (@@cache && cached_query(url)) || query(url)
+      (@@cache && cached_query(url, options)) || query(url, options)
     end
     
-    def cached_query(url)
-      @@cache[url] ||= query(url)
+    def cached_query(url, options={ })
+      @@cache[url] ||= query(url, options)
     end
 
-    def query(url)
+    def query(url, options={ })
       escaped_url = check_and_escape(url)
+      api_url = "#{EndPoint.path}?format=json&url=#{escaped_url}"
+      if options[:first_redirect]
+        api_url += "&all-redirects=1"
+      end
       Net::HTTP.start(EndPoint.host, EndPoint.port) do |http|
-        handle_response http.get("#{EndPoint.path}?format=json&url=#{escaped_url}")
+        handle_response http.get(api_url)
       end
     rescue Timeout::Error, Errno::ENETUNREACH, Errno::ETIMEDOUT, SocketError
       raise LongURL::NetworkError
@@ -88,7 +92,9 @@ module LongURL
     def handle_response(response)
       parsed = JSON.parse(response.body)
       parsed = parsed.first if parsed.is_a?(Array)
-      if parsed['long-url']
+      if parsed['all-redirects']
+        parsed['all-redirects'].first
+      elsif parsed['long-url']
         parsed['long-url']
       elsif parsed['message'] # Error
         raise exception_regarding_message(parsed['message'])

@@ -51,7 +51,7 @@ module LongURL
     # Expand given url using LongURL::Service class first and then try a direct_resolution,
     # unless :direct_resolution is set to false in options hash.
     def expand(url, options = {})
-      @@service.query_supported_service_only url
+      @@service.query_supported_service_only url, options
     rescue UnsupportedService
       options[:direct_resolution] == false ? raise(UnsupportedService) : direct_resolution(url)
     end

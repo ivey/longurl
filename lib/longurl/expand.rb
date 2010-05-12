@@ -26,7 +26,7 @@ module LongURL
     # * LongURL::UnknownError : an unknown error occurs
     def expand(url, options = {})
       @@expander ||= Expander.new(:cache => options[:cache])
-      @@expander.expand(url)
+      @@expander.expand(url, options)
     end
   end
   
